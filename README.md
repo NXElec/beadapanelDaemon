@@ -2,7 +2,7 @@
 Beadapanel Deamon to handle the Panel-Link flow transmit on Raspberry Pi
 
 
-<img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/><br>
+<img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/>
 
 ### First time Setup
 BeadaPanel will not work automatically when first time plugin to Raspberry Pi. Instead, A beadapanel deamon program should be running on Raspberry Pi to handle the data transmit between two USB peers. Below are procedures to setup this beadapanel deamon.
@@ -39,9 +39,9 @@ BeadaPanel Daemon Ver. 1.0
 $ sudo nano /etc/rc.local -> add new line before "exit 0" with "/usr/bin/bpd &" without quote 
 $ sudo reboot
 ```
+<br>
 
-
-### How to native compile on Raspberry Pi:
+### How to do native compile on Raspberry Pi:
 ```
 gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread -DBPD_VC4_ENABLE
 ```
@@ -51,7 +51,7 @@ Compile for environment without brcm VC4/OpenMAX support:
 gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread
 ```
 
-
+<br>
 
 [BeadaPanel Official Page](http://www.nxelec.com/products/hmi/beadapanel-media-display)<br>
 [BeadaPanel Wiki](https://www.elinux.org/BeadaPanel)
