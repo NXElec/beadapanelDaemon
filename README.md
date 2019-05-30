@@ -4,7 +4,7 @@ Beadapanel Deamon to handle the Panel-Link flow transmit on Raspberry Pi
 
 <img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/><br>
 
-#####How to compile:
+##### How to compile:
 ```
 gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread -DBPD_VC4_ENABLE
 ```
@@ -14,14 +14,14 @@ Compile for environment without brcm VC4/OpenMAX support:
 gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread
 ```
 
-#####First time Setup
+##### First time Setup
 BeadaPanel will not work automatically when first time plugin to Raspberry Pi. Instead, A beadapanel deamon program should be running on Raspberry Pi to handle the data transmit between two USB peers. Below are procedures to setup this beadapanel deamon.
 
-######Pre-requirements
+###### Pre-requirements
 *A Raspberry Pi mini PC
 *A BeadaPanel display kit
 
-######Procedures
+###### Procedures
 1. Power on your Raspberry Pi mini PC
 2. Connect BeadaPanel to Raspberry Pi by a Micro USB cable
 3. BeadaPanel will be automaticaly recognized as a USB mass storage device by Raspberry Pi
