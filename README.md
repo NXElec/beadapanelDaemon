@@ -43,10 +43,10 @@ $ sudo reboot
 
 ### How to do native compile on Raspberry Pi:
 ```
-gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread -DBPD_VC4_ENABLE
+gcc -I/usr/include/libusb-1.0 -I/opt/vc/include -o bpd bpd.c -L/usr/lib -L/opt/vc/lib -lusb-1.0 -lpthread -lbcm_host -DBPD_VC4_ENABLE
 ```
 
-Compile for environment without brcm VC4/OpenMAX support:
+Compile under environment without brcm VC4/OpenMAX:
 ```
 gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread
 ```
