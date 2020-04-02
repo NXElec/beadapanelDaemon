@@ -43,12 +43,14 @@ $ sudo reboot
 
 ### How to do native compile on Raspberry Pi:
 ```
-gcc -I/usr/include/libusb-1.0 -I/opt/vc/include -o bpd bpd.c -L/usr/lib -L/opt/vc/lib -lusb-1.0 -lpthread -lbcm_host -DBPD_VC4_ENABLE
+git clone https://github.com/NXElec/beadapanelDaemon
+cd beadapanelDaemon
+make
 ```
 
 Compile under environment without brcm VC4/OpenMAX:
 ```
-gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread
+make bpd-novc4
 ```
 
 <br>
