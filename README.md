@@ -1,11 +1,11 @@
 # beadapanelDaemon
-Beadapanel Deamon to handle the Panel-Link flow transmit on Raspberry Pi
+Beadapanel Deamon to handle Panel-Link flow on Raspberry Pi
 
 
 <img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/>
 
 ### First time Setup
-BeadaPanel will not work automatically when first time plugin to Raspberry Pi. Instead, A beadapanel deamon program should be running on Raspberry Pi to handle the data transmit between two USB peers. Below are procedures to setup this beadapanel deamon.
+BeadaPanel will not work automatically when first time plugined to Raspberry Pi. Instead, A beadapanel deamon program should be running on Raspberry Pi to handle the data transfer between two USB peers. Below are procedures to setup this beadapanel deamon.
 
 #### Pre-requirements
 * A Raspberry Pi mini PC
@@ -14,20 +14,13 @@ BeadaPanel will not work automatically when first time plugin to Raspberry Pi. I
 #### Procedures
 1. Power on your Raspberry Pi mini PC
 2. Connect BeadaPanel to Raspberry Pi by a Micro USB cable
-3. BeadaPanel will be automaticaly recognized as a USB mass storage device by Raspberry Pi
+3. Native compile beadapanel deamon on Raspberry Pi
 ```
-pi@raspberrypi:~ $ lsblk
-NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda           8:0    0  9.1G  0 disk
-├─sda1        8:1    0 43.9M  0 part /media/pi/boot
-└─sda2        8:2    0  4.9G  0 part /media/pi/rootfs
-mmcblk0     179:0    0  7.4G  0 disk
-├─mmcblk0p1 179:1    0 43.9M  0 part /boot
-└─mmcblk0p2 179:2    0  7.4G  0 part /
-pi@raspberrypi:~ $ ls /media/pi/boot/bpd
-bpd
+git clone https://github.com/NXElec/beadapanelDaemon
+cd beadapanelDaemon
+make
 ```
-4. Locate and run beadapanel deamon in /media/pi/boot/bpd folder
+4. Locate and run beadapanel deamon
 ```
 pi@raspberrypi:~ $ sudo cp /media/pi/boot/bpd/bpd /usr/bin 
 pi@raspberrypi:~ $ sudo chmod +x /usr/bin/bpd
@@ -41,18 +34,12 @@ $ sudo reboot
 ```
 <br>
 
-### How to do native compile on Raspberry Pi:
+### Compile beadapanel deamon under environment without brcm VC4/OpenMAX support:
 ```
 git clone https://github.com/NXElec/beadapanelDaemon
 cd beadapanelDaemon
-make
-```
-
-Compile under environment without brcm VC4/OpenMAX:
-```
 make bpd-novc4
 ```
-
 <br>
 
 [BeadaPanel Official Page](http://www.nxelec.com/products/hmi/beadapanel-media-display)<br>
