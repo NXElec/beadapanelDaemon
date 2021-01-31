@@ -45,7 +45,7 @@ gcc -I/usr/include/libusb-1.0 -o bpd bpd.c -L/usr/lib -lusb-1.0 -lpthread -DBPD_
 /******************** Messages and Errors ***********************************/
 static const char argv0[] = "bpd";
 static unsigned int verbosity = 6;
-static const char ver_str[] = "BeadaPanel Daemon Ver. 1.0";
+static const char ver_str[] = "BeadaPanel Daemon Ver. 1.1";
 static const char usage_str[] = "Usage:\n"
                               " -h Help\n"
                               " -f Update frequency(fps). e.g. -f 30\n";
@@ -164,6 +164,14 @@ static libusb_hotplug_callback_handle bp_cb1, bp_cb2;
 static libusb_device_handle *bp_handle = NULL;
 static struct libusb_transfer *bp_transfer = NULL;
 static sem_t bp_sem;
+
+#ifdef BPD_VC4_ENABLE
+    DISPMANX_DISPLAY_HANDLE_T display;
+    DISPMANX_MODEINFO_T display_info;
+    DISPMANX_RESOURCE_HANDLE_T screen_resource;
+    uint32_t image_prt;
+    VC_RECT_T rect1;    
+#endif
 
 static int get_interface_ep(libusb_device *dev)
 {
@@ -369,17 +377,23 @@ static int transmitBP(void *arg)
     	if (bp_stat == busy) {                                  
 
             /* Prepare tag header */
-		    tag.type = TYPE_START;
-		    tag.version = 1;
-		    memcpy(tag.protocol_name, protocol_str, sizeof tag.protocol_name);
-		    memset(tag.fmtstr, 0, sizeof tag.fmtstr);
+            tag.type = TYPE_START;
+            tag.version = 1;
+            memcpy(tag.protocol_name, protocol_str, sizeof tag.protocol_name);
+            memset(tag.fmtstr, 0, sizeof tag.fmtstr);
 		    
-		    if (stream_src == FB) 
+            if (stream_src == FB) 
                 sprintf(tag.fmtstr, "image/x-raw, format=BGR16, height=%d, width=%d, framerate=0/1", vinfo.yres, vinfo.xres);
-            else if (stream_src == VC4)
-                sprintf(tag.fmtstr, "image/x-raw, format=BGR16, height=%d, width=%d, framerate=0/1", 480, 800);	
-            
-		    tag.checksum16 = checkSum16((unsigned short *)&tag, (sizeof tag - 2) / 2);
+            else if (stream_src == VC4) {
+
+                #ifdef BPD_VC4_ENABLE
+                if ((display_info.transform==1) || (display_info.transform==3))
+                    sprintf(tag.fmtstr, "image/x-raw, format=BGR16, height=%d, width=%d, framerate=0/1", display_info.width, display_info.height);	
+                else
+                    sprintf(tag.fmtstr, "image/x-raw, format=BGR16, height=%d, width=%d, framerate=0/1", display_info.height, display_info.width);	
+                 #endif	
+            }             
+            tag.checksum16 = checkSum16((unsigned short *)&tag, (sizeof tag - 2) / 2);
  
     		/* Send tag header */
             if ((ret = libusb_bulk_transfer(bp_handle, bp_ep, (unsigned char *)&tag, 
@@ -503,19 +517,11 @@ static int streamBP(void *arg)
 
 int main(int argc, char *argv[])
 {
-	int rc, fp, opt, fps, bs;
+    int rc, fp, opt, fps, bs;
     pthread_t tidp;
     char path[FB_PATH_LENGTH] = "/dev/fb0";	    
     char rpipe[FB_PATH_LENGTH] = "/dev/bpread";	    
     char wpipe[FB_PATH_LENGTH] = "/dev/bpwrite";	    
-
-#ifdef BPD_VC4_ENABLE
-    DISPMANX_DISPLAY_HANDLE_T display;
-    DISPMANX_MODEINFO_T display_info;
-    DISPMANX_RESOURCE_HANDLE_T screen_resource;
-    uint32_t image_prt;
-    VC_RECT_T rect1;    
-#endif
 
     printf("%s\n", ver_str);
                 
@@ -595,15 +601,23 @@ int main(int argc, char *argv[])
         die_on(vc_dispmanx_display_get_info(display, &display_info), "Unable to get primary display information\n");
  
         debug("Primary display is %d x %d", display_info.width, display_info.height);
-       
-        die_on(!(screen_resource = vc_dispmanx_resource_create(VC_IMAGE_RGB565, 800, 480, &image_prt)), 
+ 
+        if ((display_info.transform==1) || (display_info.transform==3)) {
+            die_on(!(screen_resource = vc_dispmanx_resource_create(VC_IMAGE_RGB565, display_info.height, display_info.width, &image_prt)), 
            "Unable to create screen buffer\n");
 
-        vc_dispmanx_rect_set(&rect1, 0, 0, 800, 480);
+             vc_dispmanx_rect_set(&rect1, 0, 0, display_info.height, display_info.width);
+        }
+        else {
+              die_on(!(screen_resource = vc_dispmanx_resource_create(VC_IMAGE_RGB565, display_info.width, display_info.height, &image_prt)), 
+             "Unable to create screen buffer\n");
 
-        buff_size = 800*480*2;  
+              vc_dispmanx_rect_set(&rect1, 0, 0, display_info.width, display_info.height);    	
+        }
+
+        buff_size = display_info.width*display_info.height*2;  
         stream_buff = malloc(buff_size);
- 	    die_on(sem_init(&bp_sem, 0, 0), "Error creating semaphore\n");       	
+        die_on(sem_init(&bp_sem, 0, 0), "Error creating semaphore\n");       	
 #endif
 
     }
@@ -622,10 +636,13 @@ int main(int argc, char *argv[])
         if (stream_src == VC4) {
 
 #ifdef BPD_VC4_ENABLE
-            vc_dispmanx_snapshot(display, screen_resource, 0);
-            vc_dispmanx_resource_read_data(screen_resource, &rect1, stream_buff, 800*2);  
-#endif
+           vc_dispmanx_snapshot(display, screen_resource, 0);
 
+            if ((display_info.transform==1) || (display_info.transform==3))
+                vc_dispmanx_resource_read_data(screen_resource, &rect1, stream_buff, display_info.height*2);  
+            else
+                vc_dispmanx_resource_read_data(screen_resource, &rect1, stream_buff, display_info.width*2);  
+#endif
         }
         else 
         	convFB();   
