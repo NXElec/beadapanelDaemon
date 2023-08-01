@@ -42,5 +42,5 @@ make bpd-novc4
 ```
 <br>
 
-[BeadaPanel Official Page](http://www.nxelec.com/products/hmi/beadapanel-media-display)<br>
+[BeadaPanel Official Page](http://www.nxelec.com/products/beadapanel-media-display)<br>
 [BeadaPanel Wiki](https://www.elinux.org/BeadaPanel)
