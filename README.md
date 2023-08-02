@@ -1,5 +1,5 @@
 # beadapanelDaemon
-Beadapanel Deamon to handle Panel-Link flow on Raspberry Pi
+Beadapanel Deamon to handle Panel-Link media flow on Raspberry Pi
 
 
 <img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/>
