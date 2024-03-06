@@ -5,7 +5,7 @@ Beadapanel Deamon to handle Panel-Link media flow on Raspberry Pi
 <img src="https://github.com/NXElec/beadapanelDaemon/blob/master/bprpi.png" width="600"/>
 
 ### First time Setup
-BeadaPanel will not work automatically when first time plugined to Raspberry Pi. Instead, A beadapanel deamon program should be running on Raspberry Pi to handle the data transfer between two USB peers. Below are procedures to setup this beadapanel deamon.
+BeadaPanel will not work automatically when first time plugined to Raspberry Pi. Instead, A beadapanel deamon should be running to handle the data transfer between two USB peers. Below are procedures to setup this beadapanel deamon.
 
 #### Pre-requirements
 * A Raspberry Pi mini PC
